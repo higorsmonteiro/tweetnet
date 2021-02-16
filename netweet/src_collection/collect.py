@@ -1,4 +1,5 @@
 import os
+import json
 import sys
 import requests
 
@@ -18,7 +19,9 @@ class Collector:
                 Absolute path for the JSON file containing the app tokens related to
                 the Twitter API. The schema for the json file must follow the structure:
                 '{
-                    "App": [...]
+                    "Apps": [{"api_key": "...",
+                             "api_secret_key": "...",
+                             "bearer_token": "..."}, {...}, ..., {...}]
                 }' 
 
         """
