@@ -1,6 +1,7 @@
 import os
 import json
 import sys
+import sqlite3
 import requests
 
 class Collector:
@@ -68,3 +69,50 @@ class Collector:
         """
         self.db_connector = sqlite3.connect(db_path)
         self.db_connector.close()
+
+    def get_bearer_header(self, app_index=0):
+        """Return a dictionary formatted with the bearer token authorization.
+
+        Args:
+            app_index:
+                The list index of the app list containing the authorization keys.
+        Returns:
+            Header dictionary to be used for 2.0 Authorization requests.
+        Raises:
+            BadAppIndexError:
+                If the index of the app is negative or larger than the number of 
+                existing apps.
+        """
+        if app_index > len(self._bearer_tokens)-1 or app_index < 0:
+            raise BadAppIndexError("Bad value for the app index")
+
+        return {"Authorization": f"Bearer {self._bearer_tokens[app_index]}"}
+
+    def collect_data(self, search_query=None, app_index=0):
+        """Make a HTTP request to collect tweets according the search string given.
+
+        Args:
+            search_string:
+                String storing the search request. It can contains all operators allowed
+                by the Twitter API.
+        Return:
+            data:
+                List containing all tweet objects fetched from the API.
+        Raises:
+            AttributeError:
+                If no query is given as argument for :search_query:
+        """
+        if search_string is None:
+            raise AttributeError("No query parsed.")
+
+        url = "https://api.twitter.com/2/tweets/search/recent?query={}&{}".format(
+            search_string, tweet_fields
+        )
+        headers = self.get_bearer_header(app_index)
+        response = requests.get(url, headers=headers)
+        return response # FIX
+
+
+
+class BadAppIndexError(Exceptions):
+    pass
