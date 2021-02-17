@@ -96,23 +96,26 @@ class Collector:
                 String storing the search request. It can contains all operators allowed
                 by the Twitter API.
         Return:
-            data:
-                List containing all tweet objects fetched from the API.
+            response:
+                Response object returned from the HTTP request on the Twitter API.
         Raises:
             AttributeError:
                 If no query is given as argument for :search_query:
         """
-        if search_string is None:
+        tweet_fields = "tweet.fields=author_id" # CHANGE
+        if search_query is None:
             raise AttributeError("No query parsed.")
 
         url = "https://api.twitter.com/2/tweets/search/recent?query={}&{}".format(
-            search_string, tweet_fields
+            search_query, tweet_fields
         )
         headers = self.get_bearer_header(app_index)
         response = requests.get(url, headers=headers)
         return response # FIX
 
+    # CREATE A UTILS FUNCTION TO CHECK IF A RESPONSE IS SUCESSFUL.
 
 
-class BadAppIndexError(Exceptions):
+
+class BadAppIndexError(Exception):
     pass
