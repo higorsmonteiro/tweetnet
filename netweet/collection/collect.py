@@ -1,9 +1,9 @@
 import os
 import json
 import sys
-#import utils # WORK ON THIS PROBLEM
 import sqlite3
 import requests
+import utils.collection_utils as utils # fix
 
 class Collector:
     """Class used to collect tweets using the Twitter API.
@@ -52,6 +52,11 @@ class Collector:
         with open(path_to_file, "r") as f:
             app = json.load(f)
 
+        # Validate the schema of the API KEYS file.
+        if not utils.check_apikeys_schema(app):
+            raise BadSchemaError("""The schema of the file containing the keys does not 
+                                  follow the required schema.""")
+        
         app_list = app["Apps"]
         self._keys = [ x["api_key"] for x in app_list ]
         self._secret_keys = [ x["api_secret_key"] for x in app_list ]
@@ -103,8 +108,9 @@ class Collector:
             AttributeError:
                 If no query is given as argument for :search_query:
         """
-        #tweet_obj_fields = utils.tweet_object_fields()
-        tweet_fields = "tweet.fields=author_id" # CHANGE
+        tweet_obj_fields = utils.tweet_object_fields()
+        tweet_fields = "tweet.fields=" + ','.join(tweet_obj_fields["tweet_fields"])
+
         if search_query is None:
             raise AttributeError("No query parsed.")
 
@@ -113,11 +119,15 @@ class Collector:
         )
         headers = self.get_bearer_header(app_index)
         response = requests.get(url, headers=headers)
-        return response # FIX
+        return response
 
     # CREATE A UTILS FUNCTION TO CHECK IF A RESPONSE IS SUCESSFUL.
 
 
 
+# Exceptions
 class BadAppIndexError(Exception):
+    pass
+
+class BadSchemaError(Exception):
     pass
