@@ -1,6 +1,7 @@
 import os
 import json
 import sys
+#import utils # WORK ON THIS PROBLEM
 import sqlite3
 import requests
 
@@ -102,6 +103,7 @@ class Collector:
             AttributeError:
                 If no query is given as argument for :search_query:
         """
+        #tweet_obj_fields = utils.tweet_object_fields()
         tweet_fields = "tweet.fields=author_id" # CHANGE
         if search_query is None:
             raise AttributeError("No query parsed.")

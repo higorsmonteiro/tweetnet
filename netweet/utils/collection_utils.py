@@ -1,3 +1,6 @@
+import json
+import schema
+
 def tweet_object_fields():
     """Returns a dictionary listing all fields of the tweet object.
     
@@ -16,5 +19,27 @@ def tweet_object_fields():
                                         'organic_metrics', 'possible_sensitive',
                                         'referenced_tweets', 'reply_settings',
                                         'withheld'] }
-    return tweet_fields  
+    return tweet_fields
+
+def check_apikeys_schema(api_dict):
+    """Check if the parsed JSON file satisfies the desired schema.
+
+    Args:
+        api_dict:
+            Dictionary originated by reading the JSON file.
+    
+    Returns:
+        correct:
+            Boolean. 'True' if the schema is correct, 'False' otherwise.
+    """
+    first_level_schema = schema.Schema({"Apps": list})
+    if not first_level_schema.is_valid(api_dict):
+        return False
+    
+    second_level = api_dict["Apps"]
+    valid_schema = schema.Schema([{'api_key': str, 'api_secret_key': str, 'bearer_token': str}])
+    
+    correct = valid_schema.is_valid(second_level)
+    return correct
+
 
