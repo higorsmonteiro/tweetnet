@@ -15,13 +15,12 @@ def tweet_object_fields():
                                         'conversation_id', 'created_at',
                                         'entities', 'geo', 'lang', 
                                         'in_reply_to_user_id', 'source',
-                                        'non_public_metrics', 'public_metrics',
-                                        'organic_metrics', 'possible_sensitive',
+                                        'public_metrics', 'possibly_sensitive',
                                         'referenced_tweets', 'reply_settings',
                                         'withheld'] }
     return tweet_fields
 
-def check_apikeys_schema(api_dict):
+def validate_apikeys_schema(api_dict):
     """Check if the parsed JSON file satisfies the desired schema.
 
     Args:
@@ -42,4 +41,5 @@ def check_apikeys_schema(api_dict):
     correct = valid_schema.is_valid(second_level)
     return correct
 
-
+def validate_response(response):
+    pass

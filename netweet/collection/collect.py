@@ -3,7 +3,7 @@ import json
 import sys
 import sqlite3
 import requests
-import utils.collection_utils as utils # fix
+import netweet.collection.utils as utils # fix
 
 class Collector:
     """Class used to collect tweets using the Twitter API.
@@ -15,6 +15,7 @@ class Collector:
 
         self.db_connector = None
         self.db_cursor = None
+        self.db_path = None
 
     @property
     def keys(self):
@@ -53,7 +54,7 @@ class Collector:
             app = json.load(f)
 
         # Validate the schema of the API KEYS file.
-        if not utils.check_apikeys_schema(app):
+        if not utils.validate_apikeys_schema(app):
             raise BadSchemaError("""The schema of the file containing the keys does not 
                                   follow the required schema.""")
         
@@ -73,6 +74,7 @@ class Collector:
         Returns:
             No returns.
         """
+        self.db_path = db_path
         self.db_connector = sqlite3.connect(db_path)
         self.db_connector.close()
 
@@ -109,7 +111,7 @@ class Collector:
                 If no query is given as argument for :search_query:
         """
         tweet_obj_fields = utils.tweet_object_fields()
-        tweet_fields = "tweet.fields=" + ','.join(tweet_obj_fields["tweet_fields"])
+        tweet_fields = "tweet.fields=" + ','.join(tweet_obj_fields["twitter_fields"])
 
         if search_query is None:
             raise AttributeError("No query parsed.")
