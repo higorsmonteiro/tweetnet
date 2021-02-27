@@ -96,7 +96,7 @@ class Collector:
 
         return {"Authorization": f"Bearer {self._bearer_tokens[app_index]}"}
 
-    def collect_data(self, search_query=None, app_index=0):
+    def request_data(self, search_query=None, app_index=0):
         """Make a HTTP request to collect tweets according the search string given.
 
         Args:
@@ -111,16 +111,16 @@ class Collector:
                 If no query is given as argument for :search_query:
         """
         tweet_obj_fields = utils.tweet_object_fields()
-        tweet_fields = "tweet.fields=" + ','.join(tweet_obj_fields["twitter_fields"])
+        tweet_fields = ','.join(tweet_obj_fields["twitter_fields"])
+        params = {'query': search_query, 
+                  'tweet.fields': tweet_fields}
 
         if search_query is None:
             raise AttributeError("No query parsed.")
 
-        url = "https://api.twitter.com/2/tweets/search/recent?query={}&{}".format(
-            search_query, tweet_fields
-        )
+        base_url = "https://api.twitter.com/2/tweets/search/recent?"
         headers = self.get_bearer_header(app_index)
-        response = requests.get(url, headers=headers)
+        response = requests.get(base_url, headers=headers, params=params)
         return response
 
     # CREATE A UTILS FUNCTION TO CHECK IF A RESPONSE IS SUCESSFUL.

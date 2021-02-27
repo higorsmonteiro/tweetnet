@@ -42,4 +42,23 @@ def validate_apikeys_schema(api_dict):
     return correct
 
 def validate_response(response):
-    pass
+    """Validate the sucess of a HTTP request from the twitter API.
+
+    Args:
+        response:
+            Response object returned from the HTTP request.
+
+    Returns:
+        Boolean value. True if the basic schema is valid. False otherwise.
+
+    Raises:
+        AttributeError:
+            If the argument 'response' is not a requests.Response type.
+    """
+    if type(example) != requests.models.Response:
+        raise AttributeError("'response' variable type is not a requests.Response type.")
+
+    high_level_schema = schema.Schema({'data': object, 'meta': object})
+
+    response_data = response.json()
+    return high_level_schema.is_valid(response_data)
