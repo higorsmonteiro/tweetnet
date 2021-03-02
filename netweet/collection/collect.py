@@ -9,6 +9,7 @@ class Collector:
     """Class used to collect tweets using the Twitter API.
     """
     def __init__(self):
+        self.number_apps = None
         self._keys = None
         self._secret_keys = None
         self._bearer_tokens = None
@@ -62,13 +63,14 @@ class Collector:
         self._keys = [ x["api_key"] for x in app_list ]
         self._secret_keys = [ x["api_secret_key"] for x in app_list ]
         self._bearer_tokens = [ x["bearer_token"] for x in app_list ]
+        self.number_apps = len(self._keys)
 
     def connect_database(self, db_path="/tmp/example.db"):
         """Connect with the database for tweet storage.
 
         Args:
             db_path:
-                Path to existing database. If the database does not exist, the it will
+                Path to existing database. If the database does not exist, then it will
                 be created. If the path is not parsed, then a temporary database 'example.db' 
                 will be created at "/tmp/"
         Returns:
@@ -123,8 +125,28 @@ class Collector:
         response = requests.get(base_url, headers=headers, params=params)
         return response
 
-    # CREATE A UTILS FUNCTION TO CHECK IF A RESPONSE IS SUCESSFUL.
+    def collect(self, query_list):
+        """Pass a list of search queries to make a continuous collection of 
+        tweets for each one.
 
+        """
+        try:
+            while True:
+                # For each app, we iterate through the query list and make the API request.
+                for current_app in range(self.number_apps):
+                    for q_index, current_query in enumerate(query_list):
+                        response = self.request_data(search_query=current_query, app_index=current_app)
+                        if utils.validate_response(response):
+                            # STORE DATA
+                            data = response.json()
+                            print(data.keys())
+                            #pass
+                        else:
+                            raise BadResponseError()
+        except KeyboardInterrupt:
+            return -1
+        except BadResponseError:
+            return -1
 
 
 # Exceptions
@@ -132,4 +154,7 @@ class BadAppIndexError(Exception):
     pass
 
 class BadSchemaError(Exception):
+    pass
+
+class BadResponseError(Exception):
     pass

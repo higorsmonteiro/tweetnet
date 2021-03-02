@@ -1,5 +1,6 @@
 import json
 import schema
+import requests
 
 def tweet_object_fields():
     """Returns a dictionary listing all fields of the tweet object.
@@ -55,7 +56,7 @@ def validate_response(response):
         AttributeError:
             If the argument 'response' is not a requests.Response type.
     """
-    if type(example) != requests.models.Response:
+    if type(response) != requests.models.Response:
         raise AttributeError("'response' variable type is not a requests.Response type.")
 
     high_level_schema = schema.Schema({'data': object, 'meta': object})
